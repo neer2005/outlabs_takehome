@@ -1,6 +1,7 @@
 "use client";
 
 import { createPresignedS3Post, createPresignedS3Put } from "@/app/actions";
+import { Paperclip } from "lucide-react";
 
 export default function PostComposer() {
   let file: File;
@@ -18,11 +19,11 @@ export default function PostComposer() {
         method: "PUT",
         body: file,
       });
-        if (res.ok) {
-            console.log("Upload success!");
-        } else {
-            console.error(`Upload failed: ${res}`);
-        }
+      if (res.ok) {
+        console.log("Upload success!");
+      } else {
+        console.error(`Upload failed: ${res}`);
+      }
       //   const { url, fields } = await createPresignedS3Post(); // server action
       //   const formData = new FormData();
 
@@ -59,41 +60,27 @@ export default function PostComposer() {
   }
 
   return (
-    <form>
+    <form className="border-solid border-2 rounded border-white flex flex-col p-4 m-4">
       <input
-        className="bg-black m-4"
+        className="bg-black m-2"
         type="text"
         placeholder="Say it out!"
         value={postText}
         onChange={onPostTextChange}
         required
       ></input>
-      <input
-        onChange={onAttachmentChange}
-        className="m-4"
-        type="file"
-        accept="image/png, image/jpeg"
-      />
-      <button onClick={onPost}>Post</button>
+      <div className="flex flex-row">
+        <label className="m-2">
+          <input
+            onChange={onAttachmentChange}
+            type="file"
+            accept="image/png, image/jpeg"
+            hidden
+          />
+          <Paperclip />
+        </label>
+        <button onClick={onPost}>Post</button>
+      </div>
     </form>
-    //   <div className="border-solid border-2 rounded border-white w-96 flex flex-col">
-    //     {/* <h1>Post</h1> */}
-    //     <input
-    //       className="bg-black m-4"
-    //       type="text"
-    //       placeholder="Say it out!"
-    //     ></input>
-    //     <div className="flex flex-row">
-    //       <input
-    //         className="m-4"
-    //         type="file"
-    //         id="avatar"
-    //         name="avatar"
-    //         accept="image/png, image/jpeg"
-    //       />
-    //       {/* <button className="m-4">Attachment</button> */}
-    //       <button onClick={onClick} className="m-4">Post</button>
-    //     </div>
-    //   </div>
   );
 }
