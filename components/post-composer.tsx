@@ -78,7 +78,7 @@ export default function PostComposer() {
             width={0}
             height={0}
             sizes="100vw"
-            className="w-96 h-auto"
+            className="w-20 h-auto"
             alt="attachment"
           />
         )}
