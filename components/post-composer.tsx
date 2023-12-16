@@ -1,7 +1,7 @@
 "use client";
 
 import { createPresignedS3Put } from "@/app/actions";
-import { Paperclip } from "lucide-react";
+import { Paperclip, XCircle } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -41,17 +41,31 @@ export default function PostComposer() {
     console.log(text);
   }
 
+  function onClear(event: React.MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    setFile(null);
+  }
+
   return (
     <div>
-      <form className="border-solid border-2 rounded border-white flex flex-col p-4 m-4">
+      <form className="border-solid border-2 rounded border-white flex flex-col p-4">
         <input
           className="bg-black m-2"
           type="text"
           placeholder="Say it out!"
           value={text}
           onChange={onPostTextChange}
-          required
         ></input>
+        {file && (
+          <Image
+            src={URL.createObjectURL(file)}
+            width={0}
+            height={0}
+            sizes="100vw"
+            className="w-96 h-auto"
+            alt="attachment"
+          />
+        )}
         <div className="flex flex-row">
           <label className="m-2">
             <input
@@ -62,27 +76,20 @@ export default function PostComposer() {
             />
             <Paperclip className="m-2" />
           </label>
+          {file && (
+            <button onClick={onClear}>
+              <XCircle className="m-2" />
+            </button>
+          )}
           <button
-            className="p-2 m-2 hover:border-solid hover:border-2 hover:rounded hover:border-white"
-            disabled={text.length > 0}
+            className="m-2 disabled:opacity-50"
+            disabled={text.length === 0}
             onClick={onPost}
           >
             Post
           </button>
         </div>
       </form>
-      <div>
-        {file && (
-          <div>
-            <Image
-              src={URL.createObjectURL(file)}
-              width={200}
-              height={200}
-              alt="attachment"
-            />
-          </div>
-        )}
-      </div>
     </div>
   );
 }
