@@ -1,11 +1,11 @@
 "use client";
 
-import { createPresignedS3Put, directUpload } from "@/app/actions";
+import { createPresignedS3Put, directUpload, post } from "@/app/actions";
 import { Paperclip, Send, XCircle } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
-export default function PostComposer() {
+export default function Composer() {
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
@@ -22,6 +22,7 @@ export default function PostComposer() {
           body: file,
         });
         if (res.ok) {
+          console.log(res);
           console.log("Upload success!");
         } else {
           console.error(`Upload failed: ${res}`);
@@ -31,8 +32,13 @@ export default function PostComposer() {
         const formData = new FormData();
         formData.append("file", file);
         const res = await directUpload(formData); // server action
+        console.log(res);
         console.log("Upload success!");
       }
+      // const res = await post("thatloudmango", text); // server action
+    } else {
+      // create post
+      //  const res = await post("thatloudmango", text); // server action
     }
   }
 

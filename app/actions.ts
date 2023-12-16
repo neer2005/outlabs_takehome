@@ -82,13 +82,13 @@ export async function getPosts(): Promise<ScanCommandOutput> {
   }
 }
 
-export async function post(text: string, fileUrl?: string): Promise<PutCommandOutput> {
+export async function post(userName: string, text: string, fileUrl?: string): Promise<PutCommandOutput> {
   try {
     const client = new DynamoDBClient({ region: process.env.AWS_REGION });
     const docClient = DynamoDBDocumentClient.from(client);
     const command = new PutCommand({
       TableName: process.env.AWS_DYNAMODB_TABLE,
-      Item: { id: uuidv4(), text, fileUrl },
+      Item: { id: uuidv4(), text, fileUrl, userName },
     });
     const results = await docClient.send(command);
     return results;
