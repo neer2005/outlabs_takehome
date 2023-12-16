@@ -4,7 +4,7 @@ import { createPresignedS3Put } from "@/app/actions";
 
 export async function GET(request: Request) {
   try {
-    const url = await createPresignedS3Put();
+    const {url, key} = await createPresignedS3Put();
     return Response.json({ url });
   } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });

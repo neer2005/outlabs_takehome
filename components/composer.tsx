@@ -15,7 +15,7 @@ export default function Composer() {
       // if file size over 10mb
       if (file.size > 10 * 1024 * 1024) {
         console.log(`Using presigned S3 upload for ${file.name}`);
-        const url = await createPresignedS3Put(); // server action
+        const { url, key } = await createPresignedS3Put(); // server action
         const res = await fetch(url, {
           headers: { "Content-Type": "image/png" },
           method: "PUT",
@@ -24,6 +24,7 @@ export default function Composer() {
         if (res.ok) {
           console.log(res);
           console.log("Upload success!");
+          const putCommandResponse = await post("thatloudmango", text, key); // server action
         } else {
           console.error(`Upload failed: ${res}`);
         }
@@ -31,14 +32,14 @@ export default function Composer() {
         console.log(`Using direct upload for ${file.name}`);
         const formData = new FormData();
         formData.append("file", file);
-        const res = await directUpload(formData); // server action
-        console.log(res);
+        const { directUploadResponse, key } = await directUpload(formData); // server action
+        console.log(directUploadResponse);
         console.log("Upload success!");
+        const putCommandResponse = await post("thatloudmango", text, key); // server action
       }
-      // const res = await post("thatloudmango", text); // server action
     } else {
       // create post
-      //  const res = await post("thatloudmango", text); // server action
+      const putCommandResponse = await post("thatloudmango", text); // server action
     }
   }
 

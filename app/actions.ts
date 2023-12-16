@@ -38,31 +38,38 @@ import {
 //   return { url, fields };
 // }
 
-export async function createPresignedS3Put(): Promise<string> {
+export async function createPresignedS3Put(): Promise<{
+  url: string;
+  key: string;
+}> {
   const client = new S3Client({ region: process.env.AWS_REGION });
+  const key = uuidv4();
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_S3_BUCKET,
-    Key: uuidv4(),
+    Key: key,
   });
-  return await getSignedUrl(client, command, { expiresIn: 600 });
+  const url = await getSignedUrl(client, command, { expiresIn: 600 });
+  return { url, key };
 }
 
 export async function directUpload(
   formData: FormData
-): Promise<PutObjectCommandOutput> {
+): Promise<{ directUploadResponse: PutObjectCommandOutput; key: string }> {
   try {
     const file = formData.get("file") as File;
     // see https://github.com/aws/aws-sdk-js-v3/issues/4930
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const client = new S3Client({ region: process.env.AWS_REGION });
+    const key = uuidv4();
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET,
-      Key: uuidv4(),
+      Key: key,
       Body: buffer,
       ContentType: file.type,
     });
-    return await client.send(command);
+    const directUploadResponse = await client.send(command);
+    return { directUploadResponse, key };
   } catch (error: any) {
     throw new Error(error);
   }
@@ -82,13 +89,17 @@ export async function getPosts(): Promise<ScanCommandOutput> {
   }
 }
 
-export async function post(userName: string, text: string, fileUrl?: string): Promise<PutCommandOutput> {
+export async function post(
+  userName: string,
+  text: string,
+  fileKey?: string
+): Promise<PutCommandOutput> {
   try {
     const client = new DynamoDBClient({ region: process.env.AWS_REGION });
     const docClient = DynamoDBDocumentClient.from(client);
     const command = new PutCommand({
       TableName: process.env.AWS_DYNAMODB_TABLE,
-      Item: { id: uuidv4(), text, fileUrl, userName },
+      Item: { id: uuidv4(), text, fileKey, userName },
     });
     const results = await docClient.send(command);
     return results;
