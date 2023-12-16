@@ -1,6 +1,6 @@
 "use server";
 
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, PutObjectCommandOutput, S3Client } from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuidv4 } from "uuid";
@@ -23,11 +23,24 @@ export async function createPresignedS3Post() {
   return { url, fields };
 }
 
-export async function createPresignedS3Put() {
+export async function createPresignedS3Put(): Promise<string> {
   const client = new S3Client({ region: process.env.AWS_REGION });
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_S3_BUCKET,
     Key: uuidv4(),
   });
   return getSignedUrl(client, command, { expiresIn: 600 });
+}
+
+export async function directUpload(file: File): Promise<PutObjectCommandOutput> {
+  try {
+    const client = new S3Client({ region: process.env.AWS_REGION });
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_S3_BUCKET,
+      Key: uuidv4(),
+    });
+    return await client.send(command);
+  } catch (error: any) {
+    throw new Error(error);
+  }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { createPresignedS3Put } from "@/app/actions";
-import { Paperclip, XCircle } from "lucide-react";
+import { Paperclip, Send, XCircle } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -9,12 +9,15 @@ export default function PostComposer() {
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
-  async function onPost(event: React.MouseEvent<HTMLButtonElement>) {
+  async function onSend(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
-    if (!text) {
-      return;
-    }
     if (file) {
+      // if file size over 10mb
+      if (file.size > 10 * 1024 * 1024) {
+
+      } else {
+        
+      }
       const url = await createPresignedS3Put(); // server action
       const res = await fetch(url, {
         headers: { "Content-Type": "image/png" },
@@ -31,12 +34,11 @@ export default function PostComposer() {
 
   function onAttachmentChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.files && event.target.files.length > 0) {
-      // file = event.target.files[0];
       setFile(event.target.files[0]);
     }
   }
 
-  function onPostTextChange(event: React.ChangeEvent<HTMLInputElement>) {
+  function onPostTextChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
     setText(event.target.value);
     console.log(text);
   }
@@ -47,15 +49,26 @@ export default function PostComposer() {
   }
 
   return (
-    <div>
-      <form className="border-solid border-2 rounded border-white flex flex-col p-4">
-        <input
-          className="bg-black m-2"
+    <div className="w-full md:w-2/3 lg:w-1/2">
+      <form className="border-solid border-2 rounded-lg border-black dark:border-white flex flex-col p-4">
+        {/* <input
+          className="m-2 bg-inherit"
           type="text"
           placeholder="Say it out!"
           value={text}
           onChange={onPostTextChange}
-        ></input>
+        ></input> */}
+        <textarea
+          className="bg-inherit m-2 resize-none border-none outline-none"
+          id="w3review"
+          name="w3review"
+          rows={1}
+          placeholder="Say it out!"
+          value={text}
+          onChange={onPostTextChange}
+        ></textarea>
+
+        {/* if there is a file, show it */}
         {file && (
           <Image
             src={URL.createObjectURL(file)}
@@ -66,27 +79,33 @@ export default function PostComposer() {
             alt="attachment"
           />
         )}
+
         <div className="flex flex-row">
-          <label className="m-2">
+          {/* upload attachment button */}
+          <label className="">
             <input
               onChange={onAttachmentChange}
               type="file"
               accept="image/png, image/jpeg"
               hidden
             />
-            <Paperclip className="m-2" />
+            <Paperclip className="m-2 hover:cursor-pointer" />
           </label>
+
+          {/* clear attachment button */}
           {file && (
             <button onClick={onClear}>
-              <XCircle className="m-2" />
+              <XCircle className="" />
             </button>
           )}
+
+          {/* send button */}
           <button
-            className="m-2 disabled:opacity-50"
+            className="m-2 disabled:opacity-30"
             disabled={text.length === 0}
-            onClick={onPost}
+            onClick={onSend}
           >
-            Post
+            <Send></Send>
           </button>
         </div>
       </form>
