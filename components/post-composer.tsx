@@ -1,6 +1,6 @@
 "use client";
 
-import { createPresignedS3Put } from "@/app/actions";
+import { createPresignedS3Put, directUpload } from "@/app/actions";
 import { Paperclip, Send, XCircle } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -14,20 +14,24 @@ export default function PostComposer() {
     if (file) {
       // if file size over 10mb
       if (file.size > 10 * 1024 * 1024) {
-
+        console.log(`Using presigned S3 upload for ${file.name}`);
+        const url = await createPresignedS3Put(); // server action
+        const res = await fetch(url, {
+          headers: { "Content-Type": "image/png" },
+          method: "PUT",
+          body: file,
+        });
+        if (res.ok) {
+          console.log("Upload success!");
+        } else {
+          console.error(`Upload failed: ${res}`);
+        }
       } else {
-        
-      }
-      const url = await createPresignedS3Put(); // server action
-      const res = await fetch(url, {
-        headers: { "Content-Type": "image/png" },
-        method: "PUT",
-        body: file,
-      });
-      if (res.ok) {
+        console.log(`Using direct upload for ${file.name}`);
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await directUpload(formData); // server action
         console.log("Upload success!");
-      } else {
-        console.error(`Upload failed: ${res}`);
       }
     }
   }
@@ -40,7 +44,6 @@ export default function PostComposer() {
 
   function onPostTextChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
     setText(event.target.value);
-    console.log(text);
   }
 
   function onClear(event: React.MouseEvent<HTMLButtonElement>) {
