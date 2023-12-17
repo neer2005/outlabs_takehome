@@ -31,19 +31,17 @@ export default async function Feed() {
     });
   }
 
-  const s = posts.map((post) => (
-    <div key={post.fileKey}>
-      <PostComponent id={post.id} userName={post.userName} text={post.text} />
-    </div>
-  ));
-
   return (
-    <main className="flex min-h-screen flex-col items-center m-4">
-      <h1 className="text-xl mb-2">Feed</h1>
-      <Composer />
-      <ul className="pt-4 w-full md:w-1/2">
+    <main className="flex min-h-screen flex-col items-center p-10">
+      <h1 className="text-xl pb-10">Feed</h1>
+      <div className="w-full md:w-1/2 pb-10">
+        <Composer></Composer>
+      </div>
+      <ul className="w-full md:w-1/2">
         {posts.map((post) => (
-          <PostComponent key={post.id} {...post}></PostComponent>
+          <div key={post.id} className="pb-2">
+            <PostComponent {...post}></PostComponent>
+          </div>
         ))}
       </ul>
     </main>

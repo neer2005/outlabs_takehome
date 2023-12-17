@@ -43,14 +43,14 @@ export default function Composer() {
     event.preventDefault();
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        const key = await uploadLargeFile(file); 
-        const putCommandResponse = await post("thatloudmango", text, key);  // server action
+        const key = await uploadLargeFile(file);
+        const putCommandResponse = await post("thatloudmango", text, key); // server action
       } else {
-        const key = await uploadSmallFile(file); 
-        const putCommandResponse = await post("thatloudmango", text, key);  // server action
+        const key = await uploadSmallFile(file);
+        const putCommandResponse = await post("thatloudmango", text, key); // server action
       }
     } else {
-      const putCommandResponse = await post("thatloudmango", text);  // server action
+      const putCommandResponse = await post("thatloudmango", text); // server action
     }
   }
 
@@ -70,7 +70,7 @@ export default function Composer() {
   }
 
   return (
-    <div className="border-solid border-2 rounded-lg border-black dark:border-white flex flex-col p-4 w-full md:w-1/2">
+    <div className="border-solid border-2 rounded-lg border-black dark:border-white flex flex-col p-4">
       <form className="">
         {/* text input */}
         <textarea
