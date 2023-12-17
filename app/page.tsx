@@ -4,7 +4,7 @@ import Post from "@/types/post";
 import PostComponent from "@/components/post-component";
 import ProfilePicture from "@/components/profile-picture";
 
-export default async function Feed() {
+export default async function Feed(): Promise<JSX.Element> {
   async function getPosts() {
     "use server";
     try {

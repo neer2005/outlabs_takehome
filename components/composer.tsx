@@ -5,7 +5,7 @@ import { Paperclip, Send, XCircle } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
-export default function Composer() {
+export default function Composer(): JSX.Element {
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
 

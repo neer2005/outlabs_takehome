@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function ProfilePicture({ src }: { src: string }) {
+export default function ProfilePicture({ src }: { src: string }): JSX.Element {
   return (
     <Image
       src={src}
