@@ -9,37 +9,48 @@ export default function Composer() {
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
+  async function uploadLargeFile(file: File): Promise<string> {
+    console.log(`Using presigned S3 upload for ${file.name}`);
+    const { url, key } = await createPresignedS3Put(); // server action
+    const res = await fetch(url, {
+      headers: { "Content-Type": "image/png" },
+      method: "PUT",
+      body: file,
+    });
+    if (res.ok) {
+      console.log("Upload success!");
+      return key;
+    } else {
+      console.error(`Upload failed: ${res}`);
+      throw new Error(`Upload failed: ${res}`);
+    }
+  }
+
+  async function uploadSmallFile(file: File): Promise<string> {
+    try {
+      console.log(`Using direct upload for ${file.name}`);
+      const formData = new FormData();
+      formData.append("file", file);
+      const { directUploadResponse, key } = await directUpload(formData); // server action
+      console.log("Upload success!");
+      return key;
+    } catch (error: any) {
+      throw new Error(`Upload failed: ${error.message}`);
+    }
+  }
+
   async function onSend(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     if (file) {
-      // if file size over 10mb
       if (file.size > 10 * 1024 * 1024) {
-        console.log(`Using presigned S3 upload for ${file.name}`);
-        const { url, key } = await createPresignedS3Put(); // server action
-        const res = await fetch(url, {
-          headers: { "Content-Type": "image/png" },
-          method: "PUT",
-          body: file,
-        });
-        if (res.ok) {
-          console.log(res);
-          console.log("Upload success!");
-          const putCommandResponse = await post("thatloudmango", text, key); // server action
-        } else {
-          console.error(`Upload failed: ${res}`);
-        }
+        const key = await uploadLargeFile(file); 
+        const putCommandResponse = await post("thatloudmango", text, key);  // server action
       } else {
-        console.log(`Using direct upload for ${file.name}`);
-        const formData = new FormData();
-        formData.append("file", file);
-        const { directUploadResponse, key } = await directUpload(formData); // server action
-        console.log(directUploadResponse);
-        console.log("Upload success!");
-        const putCommandResponse = await post("thatloudmango", text, key); // server action
+        const key = await uploadSmallFile(file); 
+        const putCommandResponse = await post("thatloudmango", text, key);  // server action
       }
     } else {
-      // create post
-      const putCommandResponse = await post("thatloudmango", text); // server action
+      const putCommandResponse = await post("thatloudmango", text);  // server action
     }
   }
 
@@ -59,15 +70,9 @@ export default function Composer() {
   }
 
   return (
-    <div className="w-full md:w-2/3 lg:w-1/2">
-      <form className="border-solid border-2 rounded-lg border-black dark:border-white flex flex-col p-4">
-        {/* <input
-          className="m-2 bg-inherit"
-          type="text"
-          placeholder="Say it out!"
-          value={text}
-          onChange={onPostTextChange}
-        ></input> */}
+    <div className="border-solid border-2 rounded-lg border-black dark:border-white flex flex-col p-4 w-full md:w-1/2">
+      <form className="">
+        {/* text input */}
         <textarea
           className="bg-inherit m-2 resize-none border-none outline-none"
           id="w3review"
