@@ -1,7 +1,7 @@
 import Post from "@/types/post";
 import Image from "next/image";
 
-export default function PostComponent(post: Post) {
+export default function PostComponent({post}: {post: Post}) {
   return (
     <div className="rounded-lg flex flex-col p-4 bg-zinc-100 dark:bg-zinc-900">
       {post.text}

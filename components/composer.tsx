@@ -64,13 +64,17 @@ export default function Composer() {
     }
   }
 
-  function onAttachmentChange(event: React.ChangeEvent<HTMLInputElement>): void {
+  function onAttachmentChange(
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void {
     if (event.target.files && event.target.files.length > 0) {
       setFile(event.target.files[0]);
     }
   }
 
-  function onPostTextChange(event: React.ChangeEvent<HTMLTextAreaElement>): void {
+  function onPostTextChange(
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ): void {
     setText(event.target.value);
   }
 
@@ -80,8 +84,8 @@ export default function Composer() {
   }
 
   return (
-    <div className="border-solid border-2 rounded-lg border-black dark:border-zinc-600 flex flex-col p-4">
-      <form className="">
+    <div className="border-solid border rounded-lg border-zinc-600 ">
+      <form className="p-4">
         {/* text input */}
         <textarea
           className="bg-inherit m-2 resize-none border-none outline-none"

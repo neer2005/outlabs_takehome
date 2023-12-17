@@ -2,6 +2,7 @@ import Composer from "@/components/composer";
 import { getPosts as getPostsAction } from "@/app/actions";
 import Post from "@/types/post";
 import PostComponent from "@/components/post-component";
+import ProfilePicture from "@/components/profile-picture";
 
 export default async function Feed() {
   async function getPosts() {
@@ -34,14 +35,17 @@ export default async function Feed() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-10">
-      <h1 className="text-xl pb-10 text-[#6abfdf]">Feed</h1>
-      <div className="w-full md:w-1/2 pb-10">
-        <Composer></Composer>
+      <div className="text-xl pb-10 text-[#6abfdf]">Feed</div>
+      <div className="w-full md:w-1/2 pb-10 flex flex-row gap-2">
+        <ProfilePicture src="https://pbs.twimg.com/profile_images/1673803240159293442/hkLoMF5P.jpg"></ProfilePicture>
+        <div className="w-full">
+          <Composer></Composer>
+        </div>
       </div>
       <ul className="w-full md:w-1/2">
         {posts.map((post) => (
           <div key={post.id} className="pb-2">
-            <PostComponent {...post}></PostComponent>
+            <PostComponent post={post}></PostComponent>
           </div>
         ))}
       </ul>
