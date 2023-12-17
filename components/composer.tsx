@@ -10,19 +10,23 @@ export default function Composer() {
   const [file, setFile] = useState<File | null>(null);
 
   async function uploadLargeFile(file: File): Promise<string> {
-    console.log(`Using presigned S3 upload for ${file.name}`);
-    const { url, key } = await createPresignedS3Put(); // server action
-    const res = await fetch(url, {
-      headers: { "Content-Type": "image/png" },
-      method: "PUT",
-      body: file,
-    });
-    if (res.ok) {
-      console.log("Upload success!");
-      return key;
-    } else {
-      console.error(`Upload failed: ${res}`);
-      throw new Error(`Upload failed: ${res}`);
+    try {
+      console.log(`Using presigned S3 upload for ${file.name}`);
+      const { url, key } = await createPresignedS3Put(); // server action
+      const res = await fetch(url, {
+        headers: { "Content-Type": "image/png" },
+        method: "PUT",
+        body: file,
+      });
+      if (res.ok) {
+        console.log("Upload success!");
+        return key;
+      } else {
+        console.error(`Upload failed: ${res}`);
+        throw new Error(`Upload failed: ${res}`);
+      }
+    } catch (error: any) {
+      throw new Error(`Upload failed: ${error.message}`);
     }
   }
 
@@ -39,32 +43,38 @@ export default function Composer() {
     }
   }
 
-  async function onSend(event: React.MouseEvent<HTMLButtonElement>) {
-    event.preventDefault();
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        const key = await uploadLargeFile(file);
-        const putCommandResponse = await post("thatloudmango", text, key); // server action
+  async function onSend(
+    event: React.MouseEvent<HTMLButtonElement>
+  ): Promise<void> {
+    try {
+      event.preventDefault();
+      if (file) {
+        if (file.size > 10 * 1024 * 1024) {
+          const key = await uploadLargeFile(file);
+          const putCommandResponse = await post("thatloudmango", text, key); // server action
+        } else {
+          const key = await uploadSmallFile(file);
+          const putCommandResponse = await post("thatloudmango", text, key); // server action
+        }
       } else {
-        const key = await uploadSmallFile(file);
-        const putCommandResponse = await post("thatloudmango", text, key); // server action
+        const putCommandResponse = await post("thatloudmango", text); // server action
       }
-    } else {
-      const putCommandResponse = await post("thatloudmango", text); // server action
+    } catch (error) {
+      console.error(error);
     }
   }
 
-  function onAttachmentChange(event: React.ChangeEvent<HTMLInputElement>) {
+  function onAttachmentChange(event: React.ChangeEvent<HTMLInputElement>): void {
     if (event.target.files && event.target.files.length > 0) {
       setFile(event.target.files[0]);
     }
   }
 
-  function onPostTextChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
+  function onPostTextChange(event: React.ChangeEvent<HTMLTextAreaElement>): void {
     setText(event.target.value);
   }
 
-  function onClear(event: React.MouseEvent<HTMLButtonElement>) {
+  function onClear(event: React.MouseEvent<HTMLButtonElement>): void {
     event.preventDefault();
     setFile(null);
   }

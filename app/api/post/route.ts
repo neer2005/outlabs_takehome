@@ -1,7 +1,7 @@
 import { post } from "@/app/actions";
 import Post from "@/types/post";
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   try {
     const postContent = await request.json() as Post;
     const res = await post(postContent.userName ,postContent.text, postContent.fileKey);
