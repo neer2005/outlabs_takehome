@@ -70,7 +70,7 @@ export default function Composer() {
   }
 
   return (
-    <div className="border-solid border-2 rounded-lg border-black dark:border-white flex flex-col p-4">
+    <div className="border-solid border-2 rounded-lg border-black dark:border-zinc-600 flex flex-col p-4">
       <form className="">
         {/* text input */}
         <textarea

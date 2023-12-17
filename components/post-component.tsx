@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function PostComponent(post: Post) {
   return (
-    <div className="border-solid border-2 rounded-lg border-black dark:border-white flex flex-col p-4">
+    <div className="rounded-lg  flex flex-col p-4 bg-zinc-100 dark:bg-zinc-900">
       {post.text}
       {post.fileKey && (
         <Image
@@ -11,7 +11,7 @@ export default function PostComponent(post: Post) {
           width={0}
           height={0}
           sizes="100vw"
-          className=" w-40 h-auto"
+          className="w-full h-auto"
           alt="attachment"
         />
       )}

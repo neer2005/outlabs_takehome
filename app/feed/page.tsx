@@ -33,7 +33,7 @@ export default async function Feed() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-10">
-      <h1 className="text-xl pb-10">Feed</h1>
+      <h1 className="text-xl pb-10 text-[#6abfdf]">Feed</h1>
       <div className="w-full md:w-1/2 pb-10">
         <Composer></Composer>
       </div>
